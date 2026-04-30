@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
+import mermaid from "astro-mermaid";
 import sitemap from "@astrojs/sitemap";
 
 import remarkMath from "remark-math";
@@ -15,6 +16,10 @@ export default defineConfig({
     mdx({
       remarkPlugins: [remarkMath],
       rehypePlugins: [rehypeKatex],
+    }),
+    mermaid({
+      theme: "forest",
+      autoTheme: true,
     }),
     sitemap(),
   ],

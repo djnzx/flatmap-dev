@@ -17,6 +17,8 @@
     "@astrojs/rss": "4.0.18",
     "@astrojs/sitemap": "3.7.2",
     "astro": "6.2.0",
+    "astro-mermaid": "^2.0.1",
+    "mermaid": "^11.14.0",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
     "typescript": "6.0.3"
