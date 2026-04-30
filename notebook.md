@@ -40,9 +40,6 @@ npm run build
 npm run preview
 ```
 
-
-
-
 ---
 
 ### install prettier
