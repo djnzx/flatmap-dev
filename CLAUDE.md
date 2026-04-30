@@ -24,7 +24,7 @@ Astro static site blog deployed to Cloudflare Workers via `@astrojs/cloudflare`.
 - `tags/index.astro` — all tags, sorted by post count
 - `rss.xml.js` — RSS feed endpoint
 
-**Content** lives in `src/content/blog/` as `.md` or `.mdx` files. The schema (defined in `src/content/config.ts`) requires `title`, `description`, `pubDate`; optionally accepts `updatedDate`, `heroImage`, and `tags: string[]`. File naming convention: `YYYY-MM-DD-slug.md`.
+**Content** lives in `src/content/blog/` as `.md` or `.mdx` files. The schema (defined in `src/content/config.ts`) requires `title`, `description`, `pubDate`; optionally accepts `updatedDate`, `image`, and `tags: string[]`. File naming convention: `YYYY-MM-DD-slug.md`.
 
 **Layouts and components**: `BlogPost.astro` is the only layout — it wraps every post with `Header`, `Footer`, `BaseHead` (SEO/meta), `FormattedDate`, and `Tags`. Global constants (`SITE_TITLE`, `SITE_DESCRIPTION`) live in `src/consts.ts`.
 
