@@ -1,6 +1,6 @@
 ---
-title: "Clipboard sort"
-description: "Clipboard sort according to locale"
+title: "Sort the Clipboard!"
+description: "Sorting clipboard according to your locale"
 pubDate: "Apr 30 2026"
 tags: [linux, sort]
 ---
