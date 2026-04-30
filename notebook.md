@@ -8,12 +8,22 @@ npm ci
 
 ---
 
-### fix `package-lock.json`
+### 1. remove `package-lock.json`
 
 ```shell
 rm package-lock.json
 rm -rf node_modules
-npm install
+```
+
+### 2. create `package-lock.json`
+
+```shell
+npm i
+```
+
+### 3. build
+
+```shell
 npm run build
 ```
 
