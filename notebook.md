@@ -27,6 +27,22 @@ npm i
 npm run build
 ```
 
+### 4. run locally
+
+```shell
+npm run preview
+```
+
+### 4. build & run locally
+
+```shell
+npm run build
+npm run preview
+```
+
+
+
+
 ---
 
 ### install prettier
