@@ -1,11 +1,11 @@
 ---
-layout: post
-title: "SQL interview"
-date: 2024-11-11 11:00:01 +0200
-tags: [SQL, interview]
+title: "SQL Interview: Repeating Rows Based on a Ratio"
+description: "Two approaches to expanding rows by a computed repetition count — using generate_series and using array_fill with unnest"
+pubDate: "Nov 11 2024"
+tags: [sql, interview]
 ---
 
-Having table
+Given a table with a `ratio` column, expand each row so that it appears `ceil(1/ratio)` times in the output.
 
 | data | ratio |
 | :--- | :---: |
@@ -14,7 +14,7 @@ Having table
 | c    |  0.4  |
 | d    |  1.0  |
 
-need to get the table where each element appears `1/ratio` times
+Expected output:
 
 | value |
 | :---- |
@@ -29,7 +29,7 @@ need to get the table where each element appears `1/ratio` times
 | c     |
 | d     |
 
-let's create the table
+## Setup
 
 ```sql
 create table public.log
@@ -43,11 +43,11 @@ INSERT INTO public.log (data, ratio) VALUES ('c', 0.4);
 INSERT INTO public.log (data, ratio) VALUES ('d', 1);
 ```
 
+Verify the source data:
+
 ```sql
 select data, ratio from log;
 ```
-
-output:
 
 | value | ratio |
 | :---- | :---: |
@@ -56,11 +56,11 @@ output:
 | c     |  0.4  |
 | d     |  1.0  |
 
+Compute the repetition count per row:
+
 ```sql
 select data, ceil(1/ratio) from log;
 ```
-
-output:
 
 | value | ceil |
 | :---- | :--: |
@@ -69,13 +69,13 @@ output:
 | c     |  3   |
 | d     |  1   |
 
-let's explore `series` function
+## Approach 1: generate_series
+
+`generate_series` produces a set of integers from 1 to N. Joining each row against a series of the appropriate length repeats it the right number of times:
 
 ```sql
 SELECT generate_series(1, ceil(1/.2)::integer);
 ```
-
-output:
 
 | value |
 | :---- |
@@ -85,7 +85,7 @@ output:
 | 4     |
 | 5     |
 
-let's combine
+Applied to the full table:
 
 ```sql
 select data
@@ -93,8 +93,6 @@ select data
   join generate_series(1, ceil(1/ratio)::integer) as series on true;
 ```
 
-output:
-
 | value |
 | :---- |
 | a     |
@@ -108,25 +106,25 @@ output:
 | c     |
 | d     |
 
-let's explore `array` function
+## Approach 2: array_fill + unnest
+
+An alternative using `array_fill` to construct an array of the target length, then `unnest` to expand it into rows.
+
+`array_fill` creates an array of a given value repeated N times:
 
 ```sql
 SELECT array_fill(0, ARRAY[5]);
 ```
 
-output:
-
 | value       |
 | :---------- |
 | {0,0,0,0,0} |
 
-let's explore `unnest` function
+`unnest` explodes an array into individual rows:
 
 ```sql
 SELECT unnest(array_fill(0, ARRAY[5]));
 ```
-
-output:
 
 | value |
 | :---- |
@@ -136,7 +134,7 @@ output:
 | 0     |
 | 0     |
 
-let's combine
+Combine with the source table:
 
 ```sql
 select l.data
@@ -144,8 +142,6 @@ select l.data
   join unnest(array_fill(0, ARRAY[ceil(1/l.ratio)::integer])) on true;
 ```
 
-output:
-
 | value |
 | :---- |
 | a     |
@@ -159,4 +155,4 @@ output:
 | c     |
 | d     |
 
-What we see, that `SQL` has a bunch of interesting functions to work with data
+Both approaches produce the same result. `generate_series` is more idiomatic for integer ranges; `array_fill` + `unnest` is useful when working with existing array data or when the range logic is more complex.

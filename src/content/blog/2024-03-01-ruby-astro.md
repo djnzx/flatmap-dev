@@ -7,7 +7,7 @@ tags: [astro, blog]
 
 I decided to create a simple static blog. The only idea: post every week one small thing I focused on or was asked about.
 
-Started with Jekyll — the obvious choice for GitHub Pages. Went through the Ruby setup dance on macOS:
+Started with Jekyll — the obvious choice for GitHub Pages. Went through the Ruby setup dance on macOS.
 
 It works, but the Ruby toolchain friction (chruby, bundler, gem versions) felt like overhead for something that should be simple.
 
