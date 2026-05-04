@@ -4,6 +4,7 @@
       "Bash(npm *)",
       "Bash(grep *)",
       "Bash(node *)",
+      "Bash(git pull *)",
       "Bash(git fetch *)"
     ]
   },

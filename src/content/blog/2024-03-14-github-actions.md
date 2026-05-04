@@ -1,13 +1,11 @@
 ---
-layout: post
-title: "GitHub Actions"
-date: 2024-03-14 11:00:01 +0200
+title: "First Look at GitHub Actions"
+description: "Exploring the GitHub Actions YAML structure, the questions it raises, and what the action source code actually looks like"
+pubDate: "Mar 14 2024"
 tags: [cicd, github]
 ---
 
-### Dive into github Actions
-
-this is good, that github provided working `YAML` for a particular case
+GitHub provides ready-made workflow YAML for common scenarios. For Jekyll + GitHub Pages, it looks like this:
 
 ```yaml
 name: Deploy Jekyll site to Pages
@@ -55,7 +53,7 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
-but now, I have even more questions than I was...
+The YAML works, but reading it raises more questions than it answers:
 
 ```markdown
 what are configurable root keys besides:
@@ -110,17 +108,13 @@ which env vars available:
 - how to pass information between steps and actions
 ```
 
-Thanks to [`ChatGPT`](https://chat.openai.com), I have more useful details:
+[ChatGPT](https://chat.openai.com) helped fill in some of the gaps. One useful discovery: every action referenced by `uses:` is just a public GitHub repository. The version tag (`v4`) is a branch or tag in that repo:
 
-The source code of `actions/checkout@v4`
+- [`actions/checkout`](https://github.com/actions/checkout) — [v4 source](https://github.com/actions/checkout/tree/v4)
 
-- resides on the [github](https://github.com/actions/checkout)
-- `v4` means branch, so the code [is](https://github.com/actions/checkout/tree/v4)
+The source is TypeScript — which makes sense given GitHub's ownership by Microsoft. The implementation spans multiple files and is more complex than it might seem from the outside:
 
-as we can see, the source code of action is a huge enough spaghetti
+- [main.ts](https://github.com/actions/checkout/blob/v4/src/main.ts)
+- [git-source-provider.ts](https://github.com/actions/checkout/blob/v4/src/git-source-provider.ts)
 
-- [main](https://github.com/actions/checkout/blob/v4/src/main.ts)
-- [git-source-provider](https://github.com/actions/checkout/blob/v4/src/git-source-provider.ts)
-
-It's clear enough that everything written in `TypeScript` since `GitHib` relates to `Microsoft`,
-but to be precise, I don't know, how would I implement them if I was supposed to do that
+It's a solid reminder that "one line of YAML" can represent a non-trivial amount of implementation.

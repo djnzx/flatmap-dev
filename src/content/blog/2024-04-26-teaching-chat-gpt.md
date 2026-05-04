@@ -1,27 +1,27 @@
 ---
-layout: post
-title: "Teaching ChatGPT"
-date: 2024-04-26 11:00:01 +0200
+title: "Teaching ChatGPT About Higher-Kinded Types"
+description: "An interview question about generalizing Future to an arbitrary effect type F[_] — and how ChatGPT reasoned through the constraints"
+pubDate: "Apr 26 2024"
 tags: [scala, fp]
 ---
 
-One of my favourite questions on the interview is to write
-implementation for function:
+One of my favourite interview questions is to implement this function:
 
 ```scala
 def repack[A](xs: Seq[Future[A]]): Future[(Seq[A], Seq[Throwable])] = ???
 ```
 
-it's not so complicated, and even ChatGPT was able to write the code.
+It separates successes from failures across a sequence of futures and collects both. Not particularly difficult, and ChatGPT handles it without trouble.
 
-But more interesting is that fact that ChatGPT was able to derive the answer on
-more complicated one:
+The more interesting question is the generalized form:
 
 ```scala
 def repack[F[_], A](xs: Seq[F[A]]): F[(Seq[A], Seq[Throwable])] = ???
 ```
 
-the answer was:
+Replace `Future` with an abstract effect type `F[_]`. What constraints does `F` need?
+
+ChatGPT's answer:
 
 ```text
 To implement the function repack with the signature
@@ -44,7 +44,7 @@ for lifting exceptions into the F context. This constraint allows you to handle
 both successful results and failures within F.
 ```
 
-and the code:
+And the implementation:
 
 ```scala
 import cats.MonadError
@@ -61,4 +61,6 @@ def repack[F[_]: MonadError[*[_], Throwable], A](xs: Seq[F[A]]): F[(Seq[A], Seq[
   }
 ```
 
-that's awesome!
+The reasoning is correct: `MonadError[F, Throwable]` provides `pure` for lifting values, `flatMap` for sequencing, and `attempt` for converting a potential failure into an `Either`. That is exactly the minimal constraint needed.
+
+What's notable is that ChatGPT not only produced working code but correctly identified *why* each constraint is required — which is the harder part of the question.

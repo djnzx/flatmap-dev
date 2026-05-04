@@ -1,11 +1,11 @@
 ---
-layout: post
-title: "SQL interview"
-date: 2024-10-10 11:00:01 +0200
-tags: [SQL, interview]
+title: "SQL Interview: Finding a Missing Number in a Sequence"
+description: "A step-by-step walkthrough of finding a gap in an integer sequence using a self-join and RIGHT OUTER JOIN"
+pubDate: "Oct 10 2024"
+tags: [sql, interview]
 ---
 
-Having table
+Given a table with an integer sequence that has one gap, find the missing value.
 
 | c1  |
 | :-- |
@@ -18,9 +18,9 @@ Having table
 | 8   |
 | 9   |
 
-need to find the missing number `5` in the sequence
+The missing number is `5`. The goal is to find it with SQL, without hardcoding the expected range.
 
-1. let's create the table
+## Setup
 
 ```sql
 CREATE TABLE t1(c1 integer);
@@ -36,14 +36,15 @@ VALUES (1),
        (9);
 ```
 
-our login will be based on shifting the sequence by 1,
-then find the missing bit.
+## Strategy
+
+The idea is to shift the sequence by one and join it against the original. Any value that appears in the shifted sequence but has no match in the original is a gap.
+
+Shift the sequence:
 
 ```sql
 select c1 + 1 from t1;
 ```
-
-output:
 
 | ?column? |
 | :------- |
@@ -56,7 +57,7 @@ output:
 | 9        |
 | 10       |
 
-let's combine
+The value `5` appears here but not in the original table. A `RIGHT OUTER JOIN` exposes this: rows from the right side with no match on the left will have `NULL` in the left column.
 
 ```sql
 select c1,c2
@@ -65,10 +66,7 @@ right outer join (
                   select c1 + 1 as c2
                   from t1
                  ) as t2 on (t2.c2 = t1.c1);
-
 ```
-
-output:
 
 | c1   | c2  |
 | :--- | :-- |
@@ -81,26 +79,21 @@ output:
 | 9    | 9   |
 | null | 10  |
 
-let's pick what we need:
+Filter to rows where `c1 IS NULL` to get the gaps:
 
 ```sql
 select c2
 from t1
 right outer join (select c1 + 1 as c2 from t1) as t2 on (t2.c2 = t1.c1)
 where c1 is null;
-
 ```
-
-output:
 
 | c2  |
 | :-- |
 | 5   |
 | 10  |
 
-let's narrow the results with `limit 1`
-
-the final solution:
+`10` appears because it is one past the maximum value — a natural artifact of the shift. Add `ORDER BY` and `LIMIT 1` to return only the first true gap:
 
 ```sql
 select c2
@@ -110,8 +103,6 @@ where c1 is null
 order by c2
 limit 1
 ```
-
-output:
 
 | c2  |
 | :-- |

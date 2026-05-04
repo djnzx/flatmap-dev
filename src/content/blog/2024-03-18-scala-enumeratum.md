@@ -1,15 +1,19 @@
 ---
-layout: post
-title: "Enumeratum"
-date: 2024-03-18 11:00:01 +0200
+title: "Enum Entry Names with Enumeratum"
+description: "Enumeratum gives Scala enums declarative string name transformations — and lets you override them per entry when needed"
+pubDate: "Mar 18 2024"
 tags: [scala, enumeratum]
 ---
 
-Scala has an amazing library do deal with enums: `enumeratum`
+Scala's built-in enums don't provide a clean way to control how each case maps to a string name. [Enumeratum](https://github.com/lloydmeta/enumeratum) fills that gap.
+
+Add the dependency:
 
 `libraryDependencies += "com.beachape" %% "enumeratum" % "1.7.3"`
 
-it gives great declarative enum naming:
+## Uniform name transformation
+
+Mix in a naming rule and every entry gets a transformed name automatically:
 
 ```scala
 import enumeratum.EnumEntry._
@@ -23,9 +27,6 @@ object Color extends Enum[Color] {
 }
 ```
 
-By mixing `Lowercase` it automatically provides name transformation based on the object name
-and the `Lowercase` rule
-
 ```scala
 val c1 = Color.Red.entryName
 // c1: String = "red"
@@ -33,14 +34,11 @@ val c2 = Color.Green.entryName
 // c2: String = "green"
 ```
 
-By changing `Lowercase` to `Uppercase`
-we will get another name transformer and name as a result
+Switching to `Uppercase` requires only changing the mixin:
 
 ```scala
 sealed trait Color extends EnumEntry with Uppercase
 ```
-
-and get
 
 ```scala
 val c1 = Color.Red.entryName
@@ -49,10 +47,9 @@ val c2 = Color.Green.entryName
 // c2: String = "GREEN"
 ```
 
-but what if, maybe due to some weird requirements, maybe due to the kind of legacy,
-you need to have `red` and `GREEN`?
-Library copes with that elegantly!
-Simply override method `entryName`
+## Per-entry overrides
+
+When requirements are inconsistent — perhaps due to a legacy API that mixes naming conventions — override `entryName` on specific entries:
 
 ```scala
 import enumeratum.EnumEntry._
@@ -68,9 +65,7 @@ object Color2 extends Enum[Color2] {
 }
 ```
 
-`Lowercase` rule will be applied to all elements
-but to other, for which we need another rule, we simply override `withName` method.
-And we get
+The `Lowercase` rule applies to all entries; `Green` overrides it selectively:
 
 ```scala
 val c3 = Color2.Red.entryName
@@ -78,3 +73,5 @@ val c3 = Color2.Red.entryName
 val c4 = Color2.Green.entryName
 // c4: String = "GREEN"
 ```
+
+The default rule handles the common case; the override handles the exception. No special-casing in the call site.
