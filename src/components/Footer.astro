@@ -2,15 +2,23 @@
 import SocialLinks from "./SocialLinks.astro";
 import { GOATCOUNTER_CODE } from "../consts";
 const today = new Date();
-const counterUrl = `https://${GOATCOUNTER_CODE}.goatcounter.com/counter/TOTAL.json`;
+const statsUrl = `https://${GOATCOUNTER_CODE}.goatcounter.com`;
+const counterUrl = `${statsUrl}/counter/TOTAL.json`;
 ---
 
 <footer>
   &copy; {today.getFullYear()} Alex. All rights reserved.
   <SocialLinks />
-  <span class="views" data-counter-url={counterUrl} hidden>
+  <a
+    class="views"
+    href={statsUrl}
+    target="_blank"
+    rel="noopener"
+    data-counter-url={counterUrl}
+    hidden
+  >
     <span class="views-count"></span> views
-  </span>
+  </a>
 </footer>
 <style>
   footer {
@@ -25,6 +33,12 @@ const counterUrl = `https://${GOATCOUNTER_CODE}.goatcounter.com/counter/TOTAL.js
     position: absolute;
     top: 2em;
     right: 1em;
+    text-decoration: none;
+    color: rgb(var(--gray));
+  }
+
+  .views:hover {
+    color: rgb(var(--gray-dark));
   }
 
   .views[hidden] {
