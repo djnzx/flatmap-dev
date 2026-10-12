@@ -1,17 +1,57 @@
 ---
 import SocialLinks from "./SocialLinks.astro";
+import { GOATCOUNTER_CODE } from "../consts";
 const today = new Date();
+const counterUrl = `https://${GOATCOUNTER_CODE}.goatcounter.com/counter/TOTAL.json`;
 ---
 
 <footer>
   &copy; {today.getFullYear()} Alex. All rights reserved.
   <SocialLinks />
+  <span class="views" data-counter-url={counterUrl} hidden>
+    <span class="views-count"></span> views
+  </span>
 </footer>
 <style>
   footer {
+    position: relative;
     padding: 2em 1em 6em 1em;
     background: linear-gradient(var(--gray-gradient)) no-repeat;
     color: rgb(var(--gray));
     text-align: center;
   }
+
+  .views {
+    position: absolute;
+    top: 2em;
+    right: 1em;
+  }
+
+  .views[hidden] {
+    display: none;
+  }
+
+  /* Too narrow to sit beside the centered copyright line */
+  @media (max-width: 520px) {
+    .views {
+      position: static;
+      display: block;
+      margin-top: 0.5em;
+      text-align: right;
+    }
+  }
 </style>
+
+<script>
+  // Stays hidden until the number arrives, so a failed fetch leaves no stray text.
+  const views = document.querySelector<HTMLElement>(".views");
+  if (views?.dataset.counterUrl) {
+    fetch(views.dataset.counterUrl)
+      .then((response) => (response.ok ? response.json() : Promise.reject()))
+      .then(({ count }) => {
+        views.querySelector(".views-count")!.textContent = count;
+        views.hidden = false;
+      })
+      .catch(() => {});
+  }
+</script>
